@@ -13,10 +13,11 @@ uniform mat4 camera;
 uniform mat4 projection;
 uniform bool transformNormal;
 uniform bool emissive;
+uniform bool hud;
 
 void main()
 {
-	if (!emissive)
+	if (!emissive && !hud)
 	{
 		// compute normal
 		N = (modelView * vNormal).xyz;
@@ -33,6 +34,11 @@ void main()
 		else
 			L = lightPosition.xyz - vPositionWorld.xyz;
 	}
+
+	/*if (hud)
+	{
+		vPosition.z = 0.0;
+	}*/
 
 	// compute gl_Position
 	gl_Position = projection * camera * modelView * vPosition/vPosition.w;
