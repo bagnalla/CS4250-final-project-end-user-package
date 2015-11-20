@@ -11,7 +11,6 @@ uniform vec4 cameraPosition;
 uniform mat4 modelView;
 uniform mat4 camera;
 uniform mat4 projection;
-uniform bool transformNormal;
 uniform bool emissive;
 uniform bool hud;
 

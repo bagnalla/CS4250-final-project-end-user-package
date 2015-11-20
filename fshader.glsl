@@ -43,7 +43,8 @@ void main()
 		ambient = ambientProduct;
 
 		// diffuse
-		float Kd = max(dot(LL, NN), 0.0);
+		//float Kd = max(dot(LL, NN), 0.0);
+		float Kd = abs(dot(LL, NN));
 		diffuse = Kd*diffuseProduct;
 
 		// specular
