@@ -4,8 +4,12 @@ attribute vec4 vNormal;
 varying vec3 N;
 varying vec3 L;
 varying vec3 E;
+varying vec4 fColor;
 
-uniform vec2 windowSize;
+uniform bool fShade;
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform float shininess;
+
 uniform vec4 lightPosition;
 uniform vec4 cameraPosition;
 uniform mat4 modelView;
@@ -32,13 +36,41 @@ void main()
 			L = lightPosition.xyz;
 		else
 			L = lightPosition.xyz - vPositionWorld.xyz;
-	}
 
-	/*if (hud)
-	{
-		vPosition.z = 0.0;
-	}*/
+		if (!fShade)
+		{
+			vec3 NN = normalize(N);
+			vec3 EE = normalize(E);
+			vec3 LL = normalize(L);
+			float LdotN = dot(LL, NN);
+
+			vec4 ambient, diffuse, specular;
+
+			// ambient
+			ambient = ambientProduct;
+
+			// diffuse
+			//float Kd = max(LdotN, 0.0);
+			float Kd = abs(LdotN);
+			diffuse = Kd*diffuseProduct;
+
+			// specular
+			vec3 H = normalize(LL+EE);
+			float Ks = pow(max(dot(NN, H), 0.0), shininess);
+			if (LdotN < 0.0)
+				specular = vec4(0.0, 0.0, 0.0, 1.0);
+			else
+				specular = Ks*specularProduct;
+	
+			fColor = vec4((ambient + diffuse + specular).xyz, 1.0);
+		}
+	}
 
 	// compute gl_Position
 	gl_Position = projection * camera * modelView * vPosition/vPosition.w;
+
+	/*if (hud)
+	{
+		gl_Position.z = 0.0;
+	}*/
 }
