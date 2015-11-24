@@ -1,16 +1,3 @@
-/*************************************************************************************
-
-Program:			CS 4250 Assignment 3
-
-Author:				Alexander Bagnall
-Email:				ab667712@ohio.edu
-
-Description:		Fragment shader file.
-
-Date:				November 9, 2015
-
-*************************************************************************************/
-
 varying vec3 N;
 varying vec3 L;
 varying vec3 E;
