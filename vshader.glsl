@@ -18,6 +18,8 @@ uniform mat4 projection;
 uniform bool emissive;
 uniform bool hud;
 
+varying vec2 textureCoord;
+
 void main()
 {
 	if (!emissive && !hud)
@@ -68,6 +70,7 @@ void main()
 
 	// compute gl_Position
 	gl_Position = projection * camera * modelView * vPosition/vPosition.w;
+	textureCoord = vec2((vPosition.x + 0.5), (vPosition.y + 0.5));
 
 	/*if (hud)
 	{

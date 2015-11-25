@@ -12,17 +12,25 @@ uniform float shininess;
 uniform bool emissive;
 uniform vec4 emissionColor;
 
+varying vec2 textureCoord;
+uniform bool useTexture;
+uniform sampler2D texture;
+
 void main()
 {
+	if (useTexture)
+	{
+		gl_FragColor = texture2D(texture, textureCoord);
+	}
 	// if emissive then just do use the emission color
-	if (emissive)
+	else if (emissive)
 	{
 		gl_FragColor = emissionColor;
 	}
-	// otherwise compute ambient, diffuse, and specular products and
-	// set the color as the sum of them
 	else
 	{
+		// if doing per-fragment lighting, compute the ambient, diffuse,
+		// and specular products and set the color as the sum of them
 		if (fShade)
 		{
 			// normalize the normal, eye, and light vectors
