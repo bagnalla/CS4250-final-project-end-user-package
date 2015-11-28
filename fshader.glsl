@@ -12,15 +12,17 @@ uniform float shininess;
 uniform bool emissive;
 uniform vec4 emissionColor;
 
-varying vec2 textureCoord;
+uniform bool hud;
+
+varying vec2 fTextureCoord;
 uniform bool useTexture;
 uniform sampler2D texture;
 
 void main()
 {
-	if (useTexture)
+	if (useTexture && hud)
 	{
-		gl_FragColor = texture2D(texture, textureCoord);
+		gl_FragColor = texture2D(texture, fTextureCoord);
 	}
 	// if emissive then just do use the emission color
 	else if (emissive)
@@ -31,7 +33,7 @@ void main()
 	{
 		// if doing per-fragment lighting, compute the ambient, diffuse,
 		// and specular products and set the color as the sum of them
-		if (fShade)
+		if (fShade || useTexture)
 		{
 			// normalize the normal, eye, and light vectors
 			vec3 NN = normalize(N);
@@ -57,7 +59,13 @@ void main()
 			else
 				specular = Ks*specularProduct;
 	
-			gl_FragColor = vec4((ambient + diffuse + specular).xyz, 1.0);
+			if (useTexture)
+				gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(texture, fTextureCoord), 0.5);
+				//gl_FragColor = mix(vec4(1.0, 0.15, 0.15, 1.0), texture2D(texture, fTextureCoord), 0.5);
+				//gl_FragColor = (ambient + diffuse + specular) * texture2D(texture, fTextureCoord);
+				//gl_FragColor = Kd * texture2D(texture, fTextureCoord);
+			else
+				gl_FragColor = vec4((ambient + diffuse + specular).xyz, 1.0);
 		}
 		else
 		{

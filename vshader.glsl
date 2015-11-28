@@ -1,5 +1,6 @@
 attribute vec4 vPosition;
 attribute vec4 vNormal;
+attribute vec4 vTextureCoordinate;
 
 varying vec3 N;
 varying vec3 L;
@@ -17,8 +18,9 @@ uniform mat4 camera;
 uniform mat4 projection;
 uniform bool emissive;
 uniform bool hud;
+uniform bool useTexture;
 
-varying vec2 textureCoord;
+varying vec2 fTextureCoord;
 
 void main()
 {
@@ -39,7 +41,7 @@ void main()
 		else
 			L = lightPosition.xyz - vPositionWorld.xyz;
 
-		if (!fShade)
+		if (!fShade && !useTexture)
 		{
 			vec3 NN = normalize(N);
 			vec3 EE = normalize(E);
@@ -70,7 +72,9 @@ void main()
 
 	// compute gl_Position
 	gl_Position = projection * camera * modelView * vPosition/vPosition.w;
-	textureCoord = vec2((vPosition.x + 0.5), (vPosition.y + 0.5));
+
+	//fTextureCoord = vec2((vPosition.x + 0.5), (vPosition.y + 0.5));
+	fTextureCoord = vec2((vTextureCoordinate.x), (vTextureCoordinate.y));
 
 	/*if (hud)
 	{
