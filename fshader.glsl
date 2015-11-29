@@ -42,16 +42,18 @@ void main()
 			vec3 NN;
 			if (useBumpMap)
 			{
-				//NN = normalize(N + texture2D(BumpTex, fTextureCoord));
-				//NN = normalize(N + texture2D(BumpTex, fTextureCoord) - vec3(0.5, 0.5, 0.5));
-				//NN = normalize(N + texture2D(BumpTex, fTextureCoord) - vec3(1.0, 1.0, 1.0));
-				//NN = normalize(N + normalize(texture2D(BumpTex, fTextureCoord)) - vec3(0.5, 0.5, 0.5));
-				//NN = normalize(texture2D(BumpTex, fTextureCoord) - vec3(0.5, 0.5, 0.5));
-				//NN = normalize(texture2D(BumpTex, fTextureCoord));
+				vec4 temp = texture2D(BumpTex, fTextureCoord);
+				//NN.x = 1 - NN.x;
+				//temp.z = 1 - NN.z;
+				//NN.y = 1 - NN.y;
 
-				NN = texture2D(BumpTex, fTextureCoord).xyz;
-				NN.z = -NN.z;
-				NN = normalize(2.0*NN-1.0);
+				temp = normalize(2.0*temp-1.0);
+
+				//temp = normalize(modelView * temp);
+
+				//NN = normalize(2.0*NN-1.0);
+
+				NN = temp.xyz;
 			}
 			else
 				NN = normalize(N);
@@ -79,10 +81,10 @@ void main()
 				specular = Ks*specularProduct;
 	
 			if (useTexture)
-				//gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(Tex, fTextureCoord), 0.5);
+				gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(Tex, fTextureCoord), 0.75);
 				//gl_FragColor = mix(vec4(1.0, 0.15, 0.15, 1.0), texture2D(Tex, fTextureCoord), 0.5);
 				//gl_FragColor = (ambient + diffuse + specular) * texture2D(Tex, fTextureCoord);
-				gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
+				//gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
 			else
 				gl_FragColor = vec4((ambient + diffuse + specular).xyz, 1.0);
 		}
