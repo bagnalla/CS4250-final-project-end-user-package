@@ -20,7 +20,7 @@ uniform sampler2D texture;
 
 void main()
 {
-	if (useTexture && hud)
+	if (useTexture && (hud || emissive))
 	{
 		gl_FragColor = texture2D(texture, fTextureCoord);
 	}
