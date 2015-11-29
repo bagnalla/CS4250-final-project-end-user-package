@@ -16,13 +16,16 @@ uniform bool hud;
 
 varying vec2 fTextureCoord;
 uniform bool useTexture;
-uniform sampler2D texture;
+uniform sampler2D Tex;
+
+uniform bool useBumpMap;
+uniform sampler2D BumpTex;
 
 void main()
 {
 	if (useTexture && (hud || emissive))
 	{
-		gl_FragColor = texture2D(texture, fTextureCoord);
+		gl_FragColor = texture2D(Tex, fTextureCoord);
 	}
 	// if emissive then just do use the emission color
 	else if (emissive)
@@ -36,7 +39,23 @@ void main()
 		if (fShade || useTexture)
 		{
 			// normalize the normal, eye, and light vectors
-			vec3 NN = normalize(N);
+			vec3 NN;
+			if (useBumpMap)
+			{
+				//NN = normalize(N + texture2D(BumpTex, fTextureCoord));
+				//NN = normalize(N + texture2D(BumpTex, fTextureCoord) - vec3(0.5, 0.5, 0.5));
+				//NN = normalize(N + texture2D(BumpTex, fTextureCoord) - vec3(1.0, 1.0, 1.0));
+				//NN = normalize(N + normalize(texture2D(BumpTex, fTextureCoord)) - vec3(0.5, 0.5, 0.5));
+				//NN = normalize(texture2D(BumpTex, fTextureCoord) - vec3(0.5, 0.5, 0.5));
+				//NN = normalize(texture2D(BumpTex, fTextureCoord));
+
+				NN = texture2D(BumpTex, fTextureCoord).xyz;
+				NN.z = -NN.z;
+				NN = normalize(2.0*NN-1.0);
+			}
+			else
+				NN = normalize(N);
+
 			vec3 EE = normalize(E);
 			vec3 LL = normalize(L);
 			float LdotN = dot(LL, NN);
@@ -60,10 +79,10 @@ void main()
 				specular = Ks*specularProduct;
 	
 			if (useTexture)
-				gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(texture, fTextureCoord), 0.5);
-				//gl_FragColor = mix(vec4(1.0, 0.15, 0.15, 1.0), texture2D(texture, fTextureCoord), 0.5);
-				//gl_FragColor = (ambient + diffuse + specular) * texture2D(texture, fTextureCoord);
-				//gl_FragColor = Kd * texture2D(texture, fTextureCoord);
+				//gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(Tex, fTextureCoord), 0.5);
+				//gl_FragColor = mix(vec4(1.0, 0.15, 0.15, 1.0), texture2D(Tex, fTextureCoord), 0.5);
+				//gl_FragColor = (ambient + diffuse + specular) * texture2D(Tex, fTextureCoord);
+				gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
 			else
 				gl_FragColor = vec4((ambient + diffuse + specular).xyz, 1.0);
 		}
