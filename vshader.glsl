@@ -41,7 +41,7 @@ void main()
 		else
 			L = lightPosition.xyz - vPositionWorld.xyz;
 
-		if (!fShade && !useTexture)
+		if (!fShade)
 		{
 			vec3 NN = normalize(N);
 			vec3 EE = normalize(E);

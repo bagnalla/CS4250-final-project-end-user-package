@@ -23,6 +23,9 @@ uniform sampler2D BumpTex;
 
 void main()
 {
+	vec4 color;
+	float Kd;
+
 	if (useTexture && (hud || emissive))
 	{
 		gl_FragColor = texture2D(Tex, fTextureCoord);
@@ -36,7 +39,7 @@ void main()
 	{
 		// if doing per-fragment lighting, compute the ambient, diffuse,
 		// and specular products and set the color as the sum of them
-		if (fShade || useTexture)
+		if (fShade)
 		{
 			// normalize the normal, eye, and light vectors
 			vec3 NN;
@@ -69,7 +72,7 @@ void main()
 
 			// diffuse
 			//float Kd = max(LdotN, 0.0);
-			float Kd = abs(LdotN);
+			Kd = abs(LdotN);
 			diffuse = Kd*diffuseProduct;
 
 			// specular
@@ -79,18 +82,18 @@ void main()
 				specular = vec4(0.0, 0.0, 0.0, 1.0);
 			else
 				specular = Ks*specularProduct;
-	
-			if (useTexture)
-				gl_FragColor = mix(vec4((ambient + diffuse + specular).xyz, 1.0), texture2D(Tex, fTextureCoord), 0.75);
-				//gl_FragColor = mix(vec4(1.0, 0.15, 0.15, 1.0), texture2D(Tex, fTextureCoord), 0.5);
-				//gl_FragColor = (ambient + diffuse + specular) * texture2D(Tex, fTextureCoord);
-				//gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
-			else
-				gl_FragColor = vec4((ambient + diffuse + specular).xyz, 1.0);
+
+			color = vec4((ambient + diffuse + specular).xyz, 1.0);
 		}
 		else
 		{
-			gl_FragColor = fColor;
+			color = fColor;
 		}
+
+		if (useTexture)
+				gl_FragColor = mix(color, texture2D(Tex, fTextureCoord), 0.75);
+				//gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
+		else
+			gl_FragColor = color;
 	}
 }
