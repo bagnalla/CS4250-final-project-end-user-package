@@ -17,6 +17,8 @@ uniform mat4 modelView;
 uniform bool emissive;
 uniform vec4 emissionColor;
 
+uniform float alphaOverride;
+
 uniform bool hud;
 
 varying vec2 fTextureCoord;
@@ -90,8 +92,8 @@ void main()
 				ambient = ambientProduct / distance;
 
 				// diffuse
-				//float Kd = max(LdotN, 0.0);
-				float Kd = abs(LdotN);
+				float Kd = max(LdotN, 0.0);
+				//float Kd = abs(LdotN);
 				diffuse = Kd * diffuseProduct / distance;
 
 				// specular
@@ -117,5 +119,13 @@ void main()
 			//gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
 		else
 			gl_FragColor = color;
+	}
+
+	if (alphaOverride != 0.0)
+	{
+		if (gl_FragColor.xyz == vec3(0.0, 0.0, 0.0))
+			gl_FragColor.w = 0.0;
+		else
+			gl_FragColor.w = alphaOverride;
 	}
 }

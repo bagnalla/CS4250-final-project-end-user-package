@@ -86,8 +86,8 @@ void main()
 				ambient = ambientProduct / distance;
 
 				// diffuse
-				//float Kd = max(LdotN, 0.0);
-				float Kd = abs(LdotN);
+				float Kd = max(LdotN, 0.0);
+				//float Kd = abs(LdotN);
 				diffuse = Kd * diffuseProduct / distance;
 
 				// specular
