@@ -52,8 +52,8 @@ void main()
 				vec4 temp = texture2D(BumpTex, fTextureCoord);
 
 				temp = normalize(2.0*temp-1.0);
-				//temp.xz = temp.zx;
-				//temp.xy = temp.yx;
+				temp.xz = temp.zx;
+				temp.xy = temp.yx;
 
 				temp = normalRotation * temp;
 
