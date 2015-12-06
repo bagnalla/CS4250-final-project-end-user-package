@@ -59,7 +59,7 @@ void main()
 				temp = normalRotation * temp;
 
 				//NN = temp.xyz;
-				NN = normalize(normalize(temp.xyz) / 3.0 + normalize(N);
+				NN = normalize(normalize(temp.xyz) / 3.0 + normalize(N));
 
 				//NN = normalize(vec3(temp.x, temp.y, -temp.z));
 			}
