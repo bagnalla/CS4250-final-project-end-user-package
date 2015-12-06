@@ -27,6 +27,7 @@ uniform sampler2D Tex;
 
 uniform bool useBumpMap;
 uniform sampler2D BumpTex;
+uniform mat4 normalRotation;
 
 void main()
 {
@@ -49,17 +50,17 @@ void main()
 			if (useBumpMap)
 			{
 				vec4 temp = texture2D(BumpTex, fTextureCoord);
-				//NN.x = 1 - NN.x;
-				//temp.z = 1 - NN.z;
-				//NN.y = 1 - NN.y;
 
 				temp = normalize(2.0*temp-1.0);
+				//temp.xz = temp.zx;
+				//temp.xy = temp.yx;
 
-				//temp = normalize(modelView * temp);
-
-				//NN = normalize(2.0*NN-1.0);
+				temp = normalRotation * temp;
 
 				NN = temp.xyz;
+				//NN = normalize(normalize(temp.xyz) + N);
+
+				//NN = normalize(vec3(temp.x, temp.y, -temp.z));
 			}
 			else
 				NN = normalize(N);
@@ -67,15 +68,32 @@ void main()
 			vec3 EE = normalize(E);
 
 			vec3 lightColorSum = vec3(0.0, 0.0, 0.0);
+			vec4 objectAmbient, objectDiffuse, objectSpecular;
+			if (useTexture)
+			{
+				vec4 texColor = texture2D(Tex, fTextureCoord);
+				objectAmbient = mix(materialAmbient, texColor, 0.5);
+				objectDiffuse = mix(materialDiffuse, texColor, 0.5);
+				objectSpecular = mix(materialSpecular, texColor, 0.5);
+			}
+			else
+			{
+				objectAmbient = materialAmbient;
+				objectDiffuse = materialDiffuse;
+				objectSpecular = materialSpecular;
+			}
 
 			for (int i = 0; i < NUM_LIGHT_SOURCES; ++i)
 			{
 				//if (lightSources[i][3] == vec4(0.0, 0.0, 0.0, 0.0))
 				//	continue;
 
-				vec4 ambientProduct = materialAmbient * lightSources[i][0];
-				vec4 diffuseProduct = materialDiffuse * lightSources[i][1];
-				vec4 specularProduct = materialSpecular * lightSources[i][2];
+				//vec4 ambientProduct = materialAmbient * lightSources[i][0];
+				//vec4 diffuseProduct = materialDiffuse * lightSources[i][1];
+				//vec4 specularProduct = materialSpecular * lightSources[i][2];
+				vec4 ambientProduct = objectAmbient * lightSources[i][0];
+				vec4 diffuseProduct = objectDiffuse * lightSources[i][1];
+				vec4 specularProduct = objectSpecular * lightSources[i][2];
 
 				float distance;
 				//if (lightSources[i][3].w == 0.0)
@@ -114,10 +132,10 @@ void main()
 			color = fColor;
 		}
 
-		if (useTexture)
+		/*if (useTexture)
 			gl_FragColor = mix(color, texture2D(Tex, fTextureCoord), 0.5);
 			//gl_FragColor = vec4(Kd * texture2D(Tex, fTextureCoord).xyz, 1.0);
-		else
+		else*/
 			gl_FragColor = color;
 	}
 
