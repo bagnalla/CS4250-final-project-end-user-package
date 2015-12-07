@@ -1,4 +1,4 @@
-const int NUM_LIGHT_SOURCES = 2;
+const int NUM_LIGHT_SOURCES = 3;
 
 varying vec3 N;
 varying vec3 L;
@@ -52,8 +52,8 @@ void main()
 				vec4 temp = texture2D(BumpTex, fTextureCoord);
 
 				temp = normalize(2.0*temp-1.0);
-				temp.xz = temp.zx;
-				temp.xy = temp.yx;
+				//temp.xz = temp.zx;
+				//temp.yz = temp.zy;
 				//temp.x = -temp.x;
 
 				temp = normalRotation * temp;
@@ -76,6 +76,12 @@ void main()
 				objectAmbient = mix(materialAmbient, texColor, 0.5);
 				objectDiffuse = mix(materialDiffuse, texColor, 0.5);
 				objectSpecular = mix(materialSpecular, texColor, 0.5);
+				/*objectAmbient = texColor;
+				objectDiffuse = texColor;
+				objectSpecular = texColor;*/
+				/*objectAmbient = materialAmbient;
+				objectDiffuse = materialDiffuse;
+				objectSpecular = materialSpecular;*/
 			}
 			else
 			{

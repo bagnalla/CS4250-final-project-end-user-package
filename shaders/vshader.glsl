@@ -1,4 +1,4 @@
-const int NUM_LIGHT_SOURCES = 2;
+const int NUM_LIGHT_SOURCES = 3;
 
 attribute vec4 vPosition;
 attribute vec4 vNormal;
