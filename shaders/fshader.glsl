@@ -1,6 +1,7 @@
 const int NUM_LIGHT_SOURCES = 3;
 
 varying vec3 N;
+varying vec3 rawN;
 varying vec3 L;
 varying vec3 E;
 varying vec4 fColor;
@@ -12,7 +13,7 @@ uniform mat4[NUM_LIGHT_SOURCES] lightSources;
 varying vec3[NUM_LIGHT_SOURCES] lightDirections;
 
 uniform bool fShade;
-uniform mat4 modelView;
+uniform mat4 model;
 
 uniform bool emissive;
 uniform vec4 emissionColor;
@@ -49,19 +50,32 @@ void main()
 			vec3 NN;
 			if (useBumpMap)
 			{
-				vec4 temp = texture2D(BumpTex, fTextureCoord);
+				vec4 bump = texture2D(BumpTex, fTextureCoord);
 
-				temp = normalize(2.0*temp-1.0);
-				//temp.xz = temp.zx;
-				//temp.yz = temp.zy;
-				//temp.x = -temp.x;
+				bump = normalize(2.0*bump-1.0);
+				//bump.xz = bump.zx;
+				//bump.yz = bump.zy;
+				//bump.x = -bump.x;
+				//bump.z = -bump.z;
 
-				temp = normalRotation * temp;
+				//N = normalize(N);
+				vec3 up = vec3(0.0, 0.0, -1.0);
+				//vec3 v = cross(up, rawN);
+				vec3 v = cross(rawN, up);
+				float s = max(0.5, length(v));
+				//float c = dot(up, rawN);
+				float c = dot(rawN, up);
+				mat3 skew = mat3(vec3(0.0, v.z, -v.y), vec3(-v.z, 0.0, v.x), vec3(v.y, -v.x, 0.0));
+				mat3 R = mat3(1.0) + skew + (skew * skew) * ((1.0 - c) / s*s);
 
-				//NN = temp.xyz;
-				NN = normalize(normalize(temp.xyz) / 3.0 + normalize(N));
+				bump.xyz = R * bump.xyz;
 
-				//NN = normalize(vec3(temp.x, temp.y, -temp.z));
+				bump = normalRotation * bump;
+
+				//NN = normalize(bump.xyz);
+				NN = normalize(normalize(bump.xyz) / 2.0 + normalize(N));
+
+				//NN = normalize(vec3(bump.x, bump.y, -bump.z));
 			}
 			else
 				NN = normalize(N);

@@ -4,6 +4,7 @@ attribute vec4 vPosition;
 attribute vec4 vNormal;
 attribute vec4 vTextureCoordinate;
 
+varying vec3 rawN;
 varying vec3 N;
 varying vec3 L;
 varying vec3 E;
@@ -18,7 +19,7 @@ uniform mat4[NUM_LIGHT_SOURCES] lightSources;
 varying vec3[NUM_LIGHT_SOURCES] lightDirections;
 
 uniform vec4 cameraPosition;
-uniform mat4 modelView;
+uniform mat4 model;
 uniform mat4 camera;
 uniform mat4 projection;
 uniform bool emissive;
@@ -32,10 +33,11 @@ void main()
 	if (!emissive && !hud)
 	{
 		// compute normal
-		N = (modelView * vNormal).xyz;
+		N = (model * vNormal).xyz;
+		rawN = normalize(vNormal.xyz);
 
 		// compute vPosition in world coordinates
-		vec4 vPositionWorld = (modelView * vPosition);
+		vec4 vPositionWorld = (model * vPosition);
 
 		// compute eye direction
 		E = cameraPosition.xyz - vPositionWorld.xyz;
@@ -107,7 +109,7 @@ void main()
 	}
 
 	// compute gl_Position
-	gl_Position = projection * camera * modelView * vPosition/vPosition.w;
+	gl_Position = projection * camera * model * vPosition/vPosition.w;
 
 	//fTextureCoord = vec2((vPosition.x + 0.5), (vPosition.y + 0.5));
 	fTextureCoord = vec2((vTextureCoordinate.x), (vTextureCoordinate.y));
