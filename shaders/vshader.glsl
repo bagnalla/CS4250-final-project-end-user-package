@@ -56,7 +56,7 @@ void main()
 			else
 				lightDirections[i] = (lightSources[i][3] - vPositionWorld).xyz;
 		}
-
+		
 		if (!fShade)
 		{
 			vec3 NN = normalize(N);
